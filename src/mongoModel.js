@@ -26,9 +26,54 @@ export async function executeCrudOperations(url) {
         mongoClient = await connectMongo(url)
         const db = mongoClient.db('home')
         const collection = db.collection('notes')
+
+        // CRUD: Create note
+        // await createOne(collection)
+
+        // CRUD: Read notes by property name
+        let authors = await findByAuthor(collection, "Mel")
+        console.log(authors)
+
+        // CRUD: Update many
+        // await updateManyByAuthor(collection, "Matt", { author: "Matthew" })
+
+        // CRUD: Delete many
+        // await deleteByAuthor(collection, "Matthew")
+
     } finally {
         await mongoClient.close()
     }
 }
 
 // CRUD OPERATIONS
+
+// CREATE
+export async function createOne(collection) {
+    const note = {
+        author: "Matt",
+        title: "Living in Italy",
+        text: "I need to find the best place where to relocate to.",
+        tags: ["living", "italy", "home"]
+    }
+
+    await collection.insertOne(note)
+}
+
+// READ
+export async function findByAuthor(collection, name) {
+    
+    return collection.find({ author: name }).toArray()
+}
+
+// UPDATE
+export async function updateManyByAuthor(collection, author, updatedFields) {
+    await collection.updateMany(
+        { author },
+        { $set: updatedFields }
+    );
+ }
+
+ // DELETE
+ export async function deleteByAuthor(collection, author) {
+    await collection.deleteMany({ author });
+ }
